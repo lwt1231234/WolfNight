@@ -2,8 +2,6 @@
 using UnityEngine.UI;
 using System.Collections;
 
-
-
 public class GameControl : MonoBehaviour {
 
 	//全局静态变量
@@ -13,16 +11,18 @@ public class GameControl : MonoBehaviour {
 	int PlayerNum = 0;
 	int[] Toggles = new int[20];
 	public bool CanMove = true;
-	public GameObject PlayerCard;
+	//预设体
+	public GameObject PlayerCard, PlayerName;
+	//全局对象
+	public GameObject ConfigUI,PlayerUI,PlayerNow;
 	GameObject[] Player = new GameObject[20];
-	GameObject ConfigUI;
 
 	// Use this for initialization
 	void Start () {
 		PlayerNum = 0;
 		Toggles [0] = 0;
-		ConfigUI = GameObject.Find ("GameConfig");
 		ConfigUI.SetActive (false);
+		PlayerUI.SetActive (false);
 	}
 	
 	// Update is called once per frame
@@ -33,8 +33,11 @@ public class GameControl : MonoBehaviour {
 	public void AddPlayer(){
 		Vector3 Position = new Vector3(0, 0, PlayerCardZ);
 		Player [PlayerNum] = (GameObject)Instantiate (PlayerCard, Position, Quaternion.identity);
+		GameObject GN= (GameObject)Instantiate (PlayerName, Position, Quaternion.identity);
+		Player [PlayerNum].GetComponent<PlayerCard> ().PlayerName = GN;
+		GN.transform.SetParent (GameObject.Find ("MainCanvas").transform);
+		GN.transform.Translate (Camera.main.WorldToScreenPoint (Position));
 		PlayerNum++;
-		print (PlayerNum);
 	}
 	//移动角色卡
 	public void MoveCard(bool ison){
@@ -47,6 +50,20 @@ public class GameControl : MonoBehaviour {
 		else
 			ConfigUI.SetActive (true);
 	}
+	//玩家名字输入
+	public void PlayerInputName(string Name){
+		PlayerNow.GetComponent<PlayerCard>().InputName (Name);
+	}
+
+	public void PlayerDelete(){
+		PlayerNow.GetComponent<PlayerCard>().Delete ();
+	}
+
+	//角色信息配置完成
+	public void PlayerInfoExit(){
+		PlayerUI.SetActive (false);
+	}
+
 	//角色选择响应
 	public void ToggleControl(int ID,bool ison){
 		if (ison) {
