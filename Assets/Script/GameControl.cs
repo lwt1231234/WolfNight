@@ -15,7 +15,11 @@ public class GameControl : MonoBehaviour {
 	public GameObject PlayerCard, PlayerName;
 	//全局对象
 	public GameObject ConfigUI,PlayerUI,PlayerNow;
+
+	//局部变量
 	GameObject[] Player = new GameObject[20];
+	string[] PlayerRole = new string[20];
+	string[] RoleList = {"狼人"};
 
 	// Use this for initialization
 	void Start () {
@@ -54,7 +58,7 @@ public class GameControl : MonoBehaviour {
 	public void PlayerInputName(string Name){
 		PlayerNow.GetComponent<PlayerCard>().InputName (Name);
 	}
-
+	//删除玩家
 	public void PlayerDelete(){
 		PlayerNow.GetComponent<PlayerCard>().Delete ();
 	}
@@ -85,6 +89,15 @@ public class GameControl : MonoBehaviour {
 			return;
 		}
 		GameObject.Find ("MainCanvas/GameStatus").GetComponent<Text>().text="游戏开始";
+		int i, j;
+		j = 0;
+		for (i = 1; i <= 18; i++) {
+			if (Toggles [i] == 1) {
+				PlayerRole [j] = RoleList [i];
+				j++;
+			}
+				
+		}
 	}
 
 }
