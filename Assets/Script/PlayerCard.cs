@@ -7,6 +7,7 @@ public class PlayerCard : MonoBehaviour {
 	GameObject GameControl;
 	public GameObject PlayerName;
 	public string Role;
+	public int PlayerID;
 
 	// Use this for initialization
 	void Start () {
@@ -29,6 +30,10 @@ public class PlayerCard : MonoBehaviour {
 		Vector3 OldMousePosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
 		GameControl.GetComponent<GameControl> ().PlayerNow = this.gameObject;
 
+		print (GameControl.GetComponent<GameControl> ().CanClick);
+		if (GameControl.GetComponent<GameControl> ().CanClick == false)
+			yield break;  
+
 		//如果游戏处于准备阶段
 		if (GameControl.GetComponent<GameControl> ().GameStage == "准备开始") {
 			//如果处于移动玩家状态
@@ -46,6 +51,7 @@ public class PlayerCard : MonoBehaviour {
 			//如果处于非移动状态
 			else {
 				GameControl.GetComponent<GameControl> ().PlayerUI.SetActive (true);
+				GameControl.GetComponent<GameControl> ().CanClick = false;
 			} 
 		}
 
@@ -57,6 +63,17 @@ public class PlayerCard : MonoBehaviour {
 				yield return new WaitForFixedUpdate ();  
 			}
 			GameObject.Find ("MainCanvas/GameStatus").GetComponent<Text>().text="请点击自己的卡牌查看身份";
+		}
+
+		//如果游戏处于丘比特阶段
+		if (GameControl.GetComponent<GameControl> ().GameStage == "丘比特") {
+			//弹出确认选项
+			GameControl.GetComponent<GameControl> ().ChoosePlayer.SetActive (true);
+			GameControl.GetComponent<GameControl> ().CanClick = false;
+			if (GameControl.GetComponent<GameControl> ().Lover == 0)
+				GameObject.Find ("MainCanvas/GameStatus").GetComponent<Text>().text="选择"+PlayerName.GetComponent<Text>().text+"作为1号情侣";
+			else
+				GameObject.Find ("MainCanvas/GameStatus").GetComponent<Text>().text="选择"+PlayerName.GetComponent<Text>().text+"作为2号情侣";
 		}
         
     }  
