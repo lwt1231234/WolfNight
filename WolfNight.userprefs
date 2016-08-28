@@ -2,13 +2,15 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\GameControl.cs">
     <Files>
-      <File FileName="Assets\Script\GameControl.cs" Line="410" Column="11" />
+      <File FileName="Assets\Script\GameControl.cs" Line="108" Column="21" />
       <File FileName="Assets\Script\RoleToggle.cs" Line="1" Column="1" />
-      <File FileName="Assets\Script\PlayerCard.cs" Line="112" Column="76" />
+      <File FileName="Assets\Script\PlayerCard.cs" Line="112" Column="46" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
+    <BreakpointStore>
+      <Breakpoint enabled="false" file="D:\Project\WolfNight\Assets\Script\GameControl.cs" line="88" column="1" />
+    </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

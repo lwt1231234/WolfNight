@@ -89,14 +89,30 @@ public class GameControl : MonoBehaviour {
 			ShowPlayer.SetActive (false);
 		} else {
 			ShowPlayer.SetActive (true);
-			string check;
-			int i;
+			string check,tmp;
+			int i,j;
 			check = "";
-			for (i = 0; i < PlayerNum; i++)
+			for (i = 0; i < PlayerNum; i++) {
+				tmp = Player [i].GetComponent<PlayerCard> ().Name;
+				check += tmp;
+
+				for(j=0;j<5-tmp.Length;j++)
+					check+="　";
+				tmp = Player [i].GetComponent<PlayerCard> ().Role;
+				check += tmp;
+				for(j=0;j<5-tmp.Length;j++)
+					check+="　";
 				if (Player [i].GetComponent<PlayerCard> ().IsAlive)
-					check += Player [i].GetComponent<PlayerCard> ().Name + "\t" + Player [i].GetComponent<PlayerCard> ().Role + "\t" + "存活\n";
+					check +="存活\t";
 				else
-					check += Player [i].GetComponent<PlayerCard> ().Name + "\t" + Player [i].GetComponent<PlayerCard> ().Role + "\t" + "死亡\n";
+					check +="死亡\t";
+				if (Player [i] == jingzhang)
+					check += "警长";
+				check += "\t";
+				if(Player[i]==Lovers[0]||Player[i]==Lovers[1])
+					check += "情侣";
+				check += "\n";
+			}
 			GameObject.Find ("ShowPlayer/Text").GetComponent<Text> ().text = check;
 		}
 	}
@@ -189,6 +205,10 @@ public class GameControl : MonoBehaviour {
 		GameStatus.GetComponent<Text>().text="请点击自己的卡牌查看身份";
 		GameStage = "查看身份";
 		CanClick = true;
+		GameObject.Find ("MainCanvas/Gamestart").GetComponent<Button> ().interactable=false;
+		GameObject.Find ("MainCanvas/GameExit").GetComponent<Button> ().interactable=false;
+		GameObject.Find ("MainCanvas/Addplayer").GetComponent<Button> ().interactable=false;
+		GameObject.Find ("MainCanvas/GameConfigButton").GetComponent<Button> ().interactable=false;
 	}
 
 	public void GameStop(){
@@ -197,7 +217,15 @@ public class GameControl : MonoBehaviour {
 		GameStatus.GetComponent<Text>().text="游戏已重置，请准备重新开始";
 		for (i = 0; i < DeadNum; i++)
 			Destroy (Deaded [i]);
+		GameObject.Find ("MainCanvas/Gamestart").GetComponent<Button> ().interactable=true;
+		GameObject.Find ("MainCanvas/GameExit").GetComponent<Button> ().interactable=true;
+		GameObject.Find ("MainCanvas/Addplayer").GetComponent<Button> ().interactable=true;
+		GameObject.Find ("MainCanvas/GameConfigButton").GetComponent<Button> ().interactable=true;
 		Start ();
+	}
+
+	public void GameExit(){
+		Application.Quit ();
 	}
 
 	public void NextStage(){
@@ -278,7 +306,7 @@ public class GameControl : MonoBehaviour {
 		}
 		if (GameStage == "白天结算") {
 			ShowInfo.SetActive (false);
-			if (jingzhangsiwang) {
+			if (jingzhangsiwang||lierensiwang) {
 				MoveOn ();
 			} else {
 				GameStatus.GetComponent<Text> ().text = "天黑请闭眼";
@@ -290,6 +318,7 @@ public class GameControl : MonoBehaviour {
 		}
 		if (GameStage == "转移警长") {
 			GameStatus.GetComponent<Text> ().text = "警徽被撕，无警长";
+			jingzhang = null;
 			GoNext.GetComponent<Button> ().interactable=false;
 			Invoke ("MoveOn", 3.0f);
 			return;
@@ -636,6 +665,7 @@ public class GameControl : MonoBehaviour {
 				if (shiyongjieyao) {
 					//用解药了
 					jieyaoyongle = true;
+					shiyongjieyao = false;
 				} else {
 					//没用解药
 					if (jisha.GetComponent<PlayerCard> ().Role == "长老" && shaguozhanglao == false) {
