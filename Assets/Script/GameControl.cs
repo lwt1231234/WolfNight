@@ -8,11 +8,11 @@ public class GameControl : MonoBehaviour {
 	int PlayerCardZ = 1;
 
 	//全局变量
-	int PlayerNum = 0,DeadNum;
+	public int PlayerNum = 0,DeadNum;
 	int[] Toggles = new int[20];
 	public bool CanMove=true, CanClick;
 	public string GameStage;
-	public int Lover;
+	public int Lover,MarkID;
 	//预设体
 	public GameObject PlayerCard, PlayerName,DeadMark;
 	//全局对象
@@ -42,16 +42,18 @@ public class GameControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
 	}
 	//添加角色
 	public void AddPlayer(){
 		Vector3 Position = new Vector3(0, 0, PlayerCardZ);
+		Vector3 offset = new Vector3(0, -0.5f, 0);
 		Player [PlayerNum] = (GameObject)Instantiate (PlayerCard, Position, Quaternion.identity);
-		Player [PlayerNum].GetComponent<PlayerCard> ().PlayerID = PlayerNum;
+		Player [PlayerNum].GetComponent<PlayerCard> ().PlayerID = 0;
 		GameObject GN= (GameObject)Instantiate (PlayerName, Position, Quaternion.identity);
 		Player [PlayerNum].GetComponent<PlayerCard> ().PlayerName = GN;
+		Player [PlayerNum].GetComponent<PlayerCard> ().PlayerMark = null;
 		GN.transform.SetParent (GameObject.Find ("MainCanvas").transform);
+		Position+=offset;
 		GN.transform.Translate (Camera.main.WorldToScreenPoint (Position));
 		PlayerNum++;
 	}
@@ -73,6 +75,17 @@ public class GameControl : MonoBehaviour {
 	public void MoveCard(bool ison){
 		CanMove = ison;
 	}
+	public void MarkCard(){
+		int i;
+		for (i = 0; i < PlayerNum; i++) {
+			Destroy (Player [i].GetComponent<PlayerCard> ().PlayerMark);
+			Player [i].GetComponent<PlayerCard> ().PlayerID = 0;
+		}
+		GameStage = "标记";
+		CanClick = true;
+		MarkID = 1;
+	}
+
 	//配置
 	public void GameConfig(){
 		if (ConfigUI.activeSelf) {
@@ -89,31 +102,34 @@ public class GameControl : MonoBehaviour {
 			ShowPlayer.SetActive (false);
 		} else {
 			ShowPlayer.SetActive (true);
-			string check,tmp;
-			int i,j;
-			check = "";
+			string tmp;
+			int i;
+			GameObject.Find ("ShowPlayer/ID").GetComponent<Text> ().text = "";
+			GameObject.Find ("ShowPlayer/Name").GetComponent<Text> ().text = "";
+			GameObject.Find ("ShowPlayer/Role").GetComponent<Text> ().text = "";
+			GameObject.Find ("ShowPlayer/Alive").GetComponent<Text> ().text = "";
+			GameObject.Find ("ShowPlayer/Police").GetComponent<Text> ().text = "";
+			GameObject.Find ("ShowPlayer/Lover").GetComponent<Text> ().text = "";
 			for (i = 0; i < PlayerNum; i++) {
-				tmp = Player [i].GetComponent<PlayerCard> ().Name;
-				check += tmp;
-
-				for(j=0;j<5-tmp.Length;j++)
-					check+="　";
-				tmp = Player [i].GetComponent<PlayerCard> ().Role;
-				check += tmp;
-				for(j=0;j<5-tmp.Length;j++)
-					check+="　";
+				tmp = Player [i].GetComponent<PlayerCard> ().PlayerID.ToString() + "\n";
+				GameObject.Find ("ShowPlayer/ID").GetComponent<Text> ().text += tmp;
+				tmp = Player [i].GetComponent<PlayerCard> ().Name + "\n";
+				GameObject.Find ("ShowPlayer/Name").GetComponent<Text> ().text += tmp;
+				tmp = Player [i].GetComponent<PlayerCard> ().Role + "\n";
+				GameObject.Find ("ShowPlayer/Role").GetComponent<Text> ().text += tmp;
 				if (Player [i].GetComponent<PlayerCard> ().IsAlive)
-					check +="存活\t";
+					GameObject.Find ("ShowPlayer/Alive").GetComponent<Text> ().text +="存活\n";
 				else
-					check +="死亡\t";
+					GameObject.Find ("ShowPlayer/Alive").GetComponent<Text> ().text +="死亡\n";
 				if (Player [i] == jingzhang)
-					check += "警长";
-				check += "\t";
-				if(Player[i]==Lovers[0]||Player[i]==Lovers[1])
-					check += "情侣";
-				check += "\n";
+					GameObject.Find ("ShowPlayer/Police").GetComponent<Text> ().text += "警长\n";
+				else
+					GameObject.Find ("ShowPlayer/Police").GetComponent<Text> ().text += "\n";
+				if (Player [i] == Lovers [0] || Player [i] == Lovers [1])
+					GameObject.Find ("ShowPlayer/Lover").GetComponent<Text> ().text += "情侣\n";
+				else
+					GameObject.Find ("ShowPlayer/Lover").GetComponent<Text> ().text += "\n";
 			}
-			GameObject.Find ("ShowPlayer/Text").GetComponent<Text> ().text = check;
 		}
 	}
 	//玩家名字输入
@@ -205,10 +221,80 @@ public class GameControl : MonoBehaviour {
 		GameStatus.GetComponent<Text>().text="请点击自己的卡牌查看身份";
 		GameStage = "查看身份";
 		CanClick = true;
+		GameObject.Find ("MainCanvas/Mark").GetComponent<Button> ().interactable=false;
 		GameObject.Find ("MainCanvas/Gamestart").GetComponent<Button> ().interactable=false;
 		GameObject.Find ("MainCanvas/GameExit").GetComponent<Button> ().interactable=false;
 		GameObject.Find ("MainCanvas/Addplayer").GetComponent<Button> ().interactable=false;
 		GameObject.Find ("MainCanvas/GameConfigButton").GetComponent<Button> ().interactable=false;
+		SortByRole ();
+	}
+
+	void SortByRole(){
+		int i,j;
+		GameObject tmp;
+		j = 0;
+		for (i = j; i < PlayerNum; i++) {
+			if (Player [i].GetComponent<PlayerCard> ().Role == "狼人") {
+				tmp = Player [i];
+				Player [i] = Player [j];
+				Player [j] = tmp;
+				j++;
+			}
+		}
+		for (i = j; i < PlayerNum; i++) {
+			if (Player [i].GetComponent<PlayerCard> ().Role == "女巫") {
+				tmp = Player [i];
+				Player [i] = Player [j];
+				Player [j] = tmp;
+				j++;
+				break;
+			}
+		}
+		for (i = j; i < PlayerNum; i++) {
+			if (Player [i].GetComponent<PlayerCard> ().Role == "守卫") {
+				tmp = Player [i];
+				Player [i] = Player [j];
+				Player [j] = tmp;
+				j++;
+				break;
+			}
+		}
+		for (i = j; i < PlayerNum; i++) {
+			if (Player [i].GetComponent<PlayerCard> ().Role == "先知") {
+				tmp = Player [i];
+				Player [i] = Player [j];
+				Player [j] = tmp;
+				j++;
+				break;
+			}
+		}
+		for (i = j; i < PlayerNum; i++) {
+			if (Player [i].GetComponent<PlayerCard> ().Role == "猎人") {
+				tmp = Player [i];
+				Player [i] = Player [j];
+				Player [j] = tmp;
+				j++;
+				break;
+			}
+		}
+		for (i = j; i < PlayerNum; i++) {
+			if (Player [i].GetComponent<PlayerCard> ().Role == "长老") {
+				tmp = Player [i];
+				Player [i] = Player [j];
+				Player [j] = tmp;
+				j++;
+				break;
+			}
+		}
+		for (i = j; i < PlayerNum; i++) {
+			if (Player [i].GetComponent<PlayerCard> ().Role == "丘比特") {
+				tmp = Player [i];
+				Player [i] = Player [j];
+				Player [j] = tmp;
+				j++;
+				break;
+			}
+		}
 	}
 
 	public void GameStop(){
@@ -217,6 +303,7 @@ public class GameControl : MonoBehaviour {
 		GameStatus.GetComponent<Text>().text="游戏已重置，请准备重新开始";
 		for (i = 0; i < DeadNum; i++)
 			Destroy (Deaded [i]);
+		GameObject.Find ("MainCanvas/Mark").GetComponent<Button> ().interactable=true;
 		GameObject.Find ("MainCanvas/Gamestart").GetComponent<Button> ().interactable=true;
 		GameObject.Find ("MainCanvas/GameExit").GetComponent<Button> ().interactable=true;
 		GameObject.Find ("MainCanvas/Addplayer").GetComponent<Button> ().interactable=true;
@@ -492,7 +579,7 @@ public class GameControl : MonoBehaviour {
 			return;
 		}
 		if (GameStage == "先知") {
-			GameStatus.GetComponent<Text> ().text = PlayerNow.GetComponent<PlayerCard> ().Name+"的身份是"+PlayerNow.GetComponent<PlayerCard> ().Role+"\n先知请闭眼";
+			GameStatus.GetComponent<Text> ().text = PlayerNow.GetComponent<PlayerCard> ().PlayerID.ToString () + PlayerNow.GetComponent<PlayerCard> ().Name+"的身份是"+PlayerNow.GetComponent<PlayerCard> ().Role+"\n先知请闭眼";
 			CanClick = false;
 			GoNext.GetComponent<Button> ().interactable=false;
 			Invoke ("MoveOn", 5.0f);
@@ -500,7 +587,7 @@ public class GameControl : MonoBehaviour {
 		}
 		if (GameStage == "警长") {
 			jingzhang = PlayerNow;
-			GameStatus.GetComponent<Text> ().text = PlayerNow.GetComponent<PlayerCard> ().Name+"当选警长";
+			GameStatus.GetComponent<Text> ().text = PlayerNow.GetComponent<PlayerCard> ().PlayerID.ToString () + PlayerNow.GetComponent<PlayerCard> ().Name+"当选警长";
 			CanClick = false;
 			GoNext.GetComponent<Button> ().interactable=false;
 			Invoke ("MoveOn", 2.0f);
@@ -508,7 +595,7 @@ public class GameControl : MonoBehaviour {
 		}
 		if (GameStage == "选狼人") {
 			toupiao = PlayerNow;
-			GameStatus.GetComponent<Text> ().text = PlayerNow.GetComponent<PlayerCard> ().Name+"被处决";
+			GameStatus.GetComponent<Text> ().text = PlayerNow.GetComponent<PlayerCard> ().PlayerID.ToString () + PlayerNow.GetComponent<PlayerCard> ().Name+"被处决";
 			CanClick = false;
 			GoNext.GetComponent<Button> ().interactable=false;
 			Invoke ("MoveOn", 1.0f);
@@ -516,7 +603,7 @@ public class GameControl : MonoBehaviour {
 		}
 		if (GameStage == "转移警长") {
 			jingzhang = PlayerNow;
-			GameStatus.GetComponent<Text> ().text = PlayerNow.GetComponent<PlayerCard> ().Name+"成为警长";
+			GameStatus.GetComponent<Text> ().text = PlayerNow.GetComponent<PlayerCard> ().PlayerID.ToString () + PlayerNow.GetComponent<PlayerCard> ().Name+"成为警长";
 			CanClick = false;
 			GoNext.GetComponent<Button> ().interactable=false;
 			Invoke ("MoveOn", 2.0f);
@@ -524,7 +611,7 @@ public class GameControl : MonoBehaviour {
 		}
 		if (GameStage == "猎人") {
 			die (PlayerNow, "枪杀");
-			GameStatus.GetComponent<Text> ().text = PlayerNow.GetComponent<PlayerCard> ().Name+"被枪杀";
+			GameStatus.GetComponent<Text> ().text = PlayerNow.GetComponent<PlayerCard> ().PlayerID.ToString () + PlayerNow.GetComponent<PlayerCard> ().Name+"被枪杀";
 			CanClick = false;
 			GoNext.GetComponent<Button> ().interactable=false;
 			Invoke ("MoveOn", 2.0f);
@@ -552,7 +639,7 @@ public class GameControl : MonoBehaviour {
 	}
 
 	void ShowLovers(){
-		string name1, name2, role1, role2;
+		string name1, name2, role1, role2,ID1,ID2;
 		GoNext.GetComponent<Button> ().interactable=true;
 		GameStage = "情侣";
 		if (Toggles [8] == 0||diyiye==false) {
@@ -563,9 +650,11 @@ public class GameControl : MonoBehaviour {
 		name2 = Lovers [1].GetComponent<PlayerCard> ().Name;
 		role1 = Lovers [0].GetComponent<PlayerCard> ().Role;
 		role2 = Lovers [1].GetComponent<PlayerCard> ().Role;
+		ID1 = Lovers [0].GetComponent<PlayerCard> ().PlayerID.ToString ();
+		ID2 = Lovers [1].GetComponent<PlayerCard> ().PlayerID.ToString ();
 		GameStatus.GetComponent<Text>().text="请情侣互看身份";
 		ShowInfo.SetActive (true);
-		GameObject.Find ("ShowInfo/Text").GetComponent<Text> ().text = name1 + "和" + name2 + "连为了情侣\n" + name1 + "的身份是" + role1 + "\n" + name2 + "的身份是" + role2;
+		GameObject.Find ("ShowInfo/Text").GetComponent<Text> ().text = ID1 + name1 + "和" + ID2 + name2 + "连为了情侣\n" + ID1 + name1 + "的身份是" + role1 + "\n" + ID2 + name2 + "的身份是" + role2;
 	}
 
 	void Stage_langren(){
@@ -593,19 +682,19 @@ public class GameControl : MonoBehaviour {
 		}
 		//女巫被杀
 		if(jisha==nvwu){
-			text+=jisha.GetComponent<PlayerCard> ().Name+"被杀了,不能自救";
+			text+=jisha.GetComponent<PlayerCard> ().PlayerID.ToString()+jisha.GetComponent<PlayerCard> ().Name+"被杀了,不能自救";
 			GameStatus.GetComponent<Text> ().text = text;
 			GameObject.Find ("ChoosePlayer/YES").GetComponent<Button> ().interactable=false;
 			return;
 		}
 		//解药没了
 		if (jieyaoyongle == true) {
-			text+=jisha.GetComponent<PlayerCard> ().Name+"被杀了,解药没了";
+			text+=jisha.GetComponent<PlayerCard> ().PlayerID.ToString()+jisha.GetComponent<PlayerCard> ().Name+"被杀了,解药没了";
 			GameStatus.GetComponent<Text> ().text = text;
 			GameObject.Find ("ChoosePlayer/YES").GetComponent<Button> ().interactable=false;
 			return;
 		}
-		text+=jisha.GetComponent<PlayerCard> ().Name+"被杀了,使用解药?";
+		text+=jisha.GetComponent<PlayerCard> ().PlayerID.ToString()+jisha.GetComponent<PlayerCard> ().Name+"被杀了,使用解药?";
 		GameStatus.GetComponent<Text> ().text = text;
 	}
 
@@ -734,13 +823,14 @@ public class GameControl : MonoBehaviour {
 			return;
 		p.GetComponent<PlayerCard> ().IsAlive = false;
 		if (jingzhang == p) {
-			jieguo += "警长-";
+			jieguo += "(警长)";
 			jingzhangsiwang = true;
 		}
 		if (p.GetComponent<PlayerCard> ().Role == "猎人") {
+			jieguo += "(猎人)";
 			lierensiwang = true;
 		}
-		jieguo+=p.GetComponent<PlayerCard> ().Name+"被"+way+"\n";
+		jieguo+=p.GetComponent<PlayerCard> ().PlayerID.ToString()+p.GetComponent<PlayerCard> ().Name+"死于"+way+"\n";
 		Vector3 Position = p.GetComponent<Transform>().position;
 		Deaded[DeadNum]= (GameObject)Instantiate (DeadMark, Position, Quaternion.identity);
 		DeadNum++;
