@@ -65,8 +65,15 @@ public class PlayerCard : MonoBehaviour {
 				PlayerMark.transform.SetParent (GameObject.Find ("MainCanvas").transform);
 				PlayerMark.GetComponent<Text>().text = PlayerID.ToString();
 				GameControl.GetComponent<GameControl> ().MarkID++;
-				if (GameControl.GetComponent<GameControl> ().MarkID > GameControl.GetComponent<GameControl> ().PlayerNum)
+				if (GameControl.GetComponent<GameControl> ().MarkID > GameControl.GetComponent<GameControl> ().PlayerNum) {
 					GameControl.GetComponent<GameControl> ().GameStage = "准备开始";
+					GameObject.Find ("MainCanvas/Addplayer").GetComponent<Button> ().interactable=true;
+					GameObject.Find ("MainCanvas/GameConfigButton").GetComponent<Button> ().interactable=true;
+					GameObject.Find ("MainCanvas/Gamestart").GetComponent<Button> ().interactable=true;
+					GameObject.Find ("MainCanvas/GameStop").GetComponent<Button> ().interactable=true;
+					GameControl.GetComponent<GameControl> ().GameStatus.GetComponent<Text>().text="准备开始游戏";
+				}
+					
 			}
 			if (GameControl.GetComponent<GameControl> ().GameStage == "查看身份") {
 				while (Input.GetMouseButton (0))

@@ -38,6 +38,7 @@ public class GameControl : MonoBehaviour {
 		ShowInfo.SetActive (false);
 		ShowPlayer.SetActive (false);
 		GameStage = "准备开始";
+		GameObject.Find ("MainCanvas/NextStage").GetComponent<Button> ().interactable=false;
 	}
 	
 	// Update is called once per frame
@@ -82,8 +83,15 @@ public class GameControl : MonoBehaviour {
 			Player [i].GetComponent<PlayerCard> ().PlayerID = 0;
 		}
 		GameStage = "标记";
+		GameStatus.GetComponent<Text>().text="请按顺序点击玩家为其编号";
 		CanClick = true;
 		MarkID = 1;
+		GameObject.Find ("MainCanvas/Addplayer").GetComponent<Button> ().interactable=false;
+		GameObject.Find ("MainCanvas/GameConfigButton").GetComponent<Button> ().interactable=false;
+		GameObject.Find ("MainCanvas/Gamestart").GetComponent<Button> ().interactable=false;
+		GameObject.Find ("MainCanvas/GameStop").GetComponent<Button> ().interactable=false;
+
+
 	}
 
 	//配置
@@ -226,6 +234,7 @@ public class GameControl : MonoBehaviour {
 		GameObject.Find ("MainCanvas/GameExit").GetComponent<Button> ().interactable=false;
 		GameObject.Find ("MainCanvas/Addplayer").GetComponent<Button> ().interactable=false;
 		GameObject.Find ("MainCanvas/GameConfigButton").GetComponent<Button> ().interactable=false;
+		GameObject.Find ("MainCanvas/NextStage").GetComponent<Button> ().interactable=true;
 		SortByRole ();
 	}
 
