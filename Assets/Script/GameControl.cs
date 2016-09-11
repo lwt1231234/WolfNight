@@ -328,6 +328,7 @@ public class GameControl : MonoBehaviour {
 	}
 
 	public void NextStage(){
+		GoNext.GetComponent<Button> ().interactable=false;
 		if(GameStage=="查看身份"){
 			GameStatus.GetComponent<Text>().text="天黑请闭眼";
 			CanClick = false;
@@ -390,16 +391,19 @@ public class GameControl : MonoBehaviour {
 			return;
 		}
 		if (GameStage == "夜晚结算") {
+			GoNext.GetComponent<Button> ().interactable=false;
 			CanClick = false;
 			MoveOn ();
 			return;
 		}
 		if (GameStage == "讨论") {
+			GoNext.GetComponent<Button> ().interactable=false;
 			MoveOn ();
 			return;
 		}
 		if (GameStage == "选狼人") {
 			toupiao = null;
+			GoNext.GetComponent<Button> ().interactable=false;
 			MoveOn ();
 			return;
 		}
@@ -430,8 +434,12 @@ public class GameControl : MonoBehaviour {
 		}
 	}
 
-	void MoveOn(){
+	void EnableNextStage(){
 		GoNext.GetComponent<Button> ().interactable=true;
+	}
+
+	void MoveOn(){
+		Invoke ("EnableNextStage", 1.0f);
 		if (GameStage == "查看身份") {
 			Stage_qiubite ();
 			return;
@@ -652,7 +660,7 @@ public class GameControl : MonoBehaviour {
 
 	void ShowLovers(){
 		string name1, name2, role1, role2,ID1,ID2;
-		GoNext.GetComponent<Button> ().interactable=true;
+		Invoke ("EnableNextStage", 1.0f);
 		GameStage = "情侣";
 		if (Toggles [8] == 0||diyiye==false) {
 			MoveOn ();
@@ -670,7 +678,7 @@ public class GameControl : MonoBehaviour {
 	}
 
 	void Stage_langren(){
-		GoNext.GetComponent<Button> ().interactable=true;
+		Invoke ("EnableNextStage", 1.0f);
 		GameStatus.GetComponent<Text>().text="请狼人睁眼并选择击杀目标\n如果平票直接点下一步";
 		GameStage = "狼人";
 		CanClick = true;
