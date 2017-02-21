@@ -1,7 +1,7 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2008
-
-Project("{BBE198CC-DDD1-DA15-4B81-1D74C9A9AFD0}") = "WolfNight", "Assembly-CSharp.csproj", "{8540B14E-7D24-FDDF-DF7B-65189F110532}"
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WolfNight.CSharp", "WolfNight.CSharp.csproj", "{070A4174-4027-9135-440F-49C858266672}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,15 +9,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8540B14E-7D24-FDDF-DF7B-65189F110532}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8540B14E-7D24-FDDF-DF7B-65189F110532}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8540B14E-7D24-FDDF-DF7B-65189F110532}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8540B14E-7D24-FDDF-DF7B-65189F110532}.Release|Any CPU.Build.0 = Release|Any CPU
+		{070A4174-4027-9135-440F-49C858266672}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{070A4174-4027-9135-440F-49C858266672}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{070A4174-4027-9135-440F-49C858266672}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{070A4174-4027-9135-440F-49C858266672}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Assembly-CSharp.csproj
 	EndGlobalSection
 EndGlobal

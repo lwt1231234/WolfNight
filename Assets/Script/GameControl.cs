@@ -10,8 +10,8 @@ public class GameControl : MonoBehaviour {
 	//全局变量
 	public int PlayerNum = 0,DeadNum;
 	int[] Toggles = new int[20];
-	public bool CanMove=true, CanClick;
-	public string GameStage;
+	public bool CanMove=true, CanMove_hode, CanClick;
+	public string GameStage, GameMode;
 	public int Lover,MarkID;
 	//预设体
 	public GameObject PlayerCard, PlayerName,DeadMark;
@@ -38,6 +38,7 @@ public class GameControl : MonoBehaviour {
 		ShowInfo.SetActive (false);
 		ShowPlayer.SetActive (false);
 		GameStage = "准备开始";
+        GameMode = "Player";
 		GameObject.Find ("MainCanvas/NextStage").GetComponent<Button> ().interactable=false;
 	}
 	
@@ -80,7 +81,9 @@ public class GameControl : MonoBehaviour {
 		CanMove = ison;
 	}
 	public void MarkCard(){
-		int i;
+        CanMove_hode = CanMove;
+        int i;
+        CanMove = false;
 		for (i = 0; i < PlayerNum; i++) {
 			Destroy (Player [i].GetComponent<PlayerCard> ().PlayerMark);
 			Player [i].GetComponent<PlayerCard> ().PlayerID = 0;
@@ -93,8 +96,6 @@ public class GameControl : MonoBehaviour {
 		GameObject.Find ("MainCanvas/GameConfigButton").GetComponent<Button> ().interactable=false;
 		GameObject.Find ("MainCanvas/Gamestart").GetComponent<Button> ().interactable=false;
 		GameObject.Find ("MainCanvas/GameStop").GetComponent<Button> ().interactable=false;
-
-
 	}
 
 	//配置
@@ -107,7 +108,7 @@ public class GameControl : MonoBehaviour {
 			CanClick = false;
 		}
 	}
-
+    //查看玩家幸存状态
 	public void GameCheck(){
 		if (ShowPlayer.activeSelf) {
 			ShowPlayer.SetActive (false);
@@ -143,8 +144,35 @@ public class GameControl : MonoBehaviour {
 			}
 		}
 	}
-	//玩家名字输入
-	public void PlayerInputName(string Name){
+    //切换游戏模式
+    public void SwitchMode()
+    {
+        int i;
+        if (GameMode == "Player")
+        {
+            GameMode = "God";
+            for (i = 0; i < PlayerNum; i++)
+            {
+                Player[i].GetComponent<PlayerCard>().PlayerMark.GetComponent<Text>().text 
+                    = Player[i].GetComponent<PlayerCard>().PlayerID.ToString()
+                    +" "
+                    + Player[i].GetComponent<PlayerCard>().Role;
+            }
+        }
+        else if (GameMode == "God")
+        {
+            GameMode = "Player";
+            for (i = 0; i < PlayerNum; i++)
+            {
+                Player[i].GetComponent<PlayerCard>().PlayerMark.GetComponent<Text>().text = Player[i].GetComponent<PlayerCard>().PlayerID.ToString();
+            }
+        }
+        
+    }
+
+
+    //玩家名字输入
+    public void PlayerInputName(string Name){
 		PlayerNow.GetComponent<PlayerCard>().InputName (Name);
 	}
 	//删除玩家
